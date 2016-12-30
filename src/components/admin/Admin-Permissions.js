@@ -5,10 +5,20 @@ import {
   Button,
   FormControl,
   Glyphicon
-} from 'react-bootstrap';
-import React, {PropTypes} from 'react';
+} from "react-bootstrap";
+import {connect} from "react-redux";
+import React, {PropTypes} from "react";
+import {tableRowAdd, tableRowDelete, tableCellUpdate, tableRowEdit, tableRowEditToggle} from "../../actions/tableActions";
 
-const AdminPermissions = (props) => (
+const AdminPermissions = ({
+  adminPermissions,
+  onAdd,
+  onDelete,
+  onInput,
+  toggleActive,
+  onEdit,
+  toggleEdit
+}) => (
   <Row>
     <Col xs={12}>
       <h3>Permissions</h3>
@@ -24,15 +34,50 @@ const AdminPermissions = (props) => (
           </tr>
         </thead>
         <tbody>
-          {/*map rows, different component? -> remove 'disabled' if editing */}
+          {adminPermissions.data.map(row => (
+            <tr key={row.id} data-id={row.id}>
+              <td className={adminPermissions.editing === row.id
+                ? "editing"
+                : ""}>
+                <FormControl type="text" placeholder="Enter Name" className="input-sm" value={row.name} data-list="data" onInput={onInput} disabled={adminPermissions.editing !== row.id}/>
+              </td>
+              <td className={adminPermissions.editing === row.id
+                ? "editing"
+                : ""}>
+                <FormControl componentClass="select" className="input-sm" value={row.role} data-list="data" onInput={onInput} disabled={adminPermissions.editing !== row.id}>
+                  <option value="">Select Role</option>
+                  <option value="1">Security</option>
+                  <option value="2">Admin</option>
+                  <option value="3">Super Admin</option>
+                  <option value="4">Super Duper Admin</option>
+                </FormControl>
+              </td>
+              <td className={adminPermissions.editing === row.id
+                ? "editing"
+                : ""}>
+                <Button block bsStyle="default" bsSize="sm" className="outline" data-key="active" data-list="data" data-value={row.active} onClick={toggleActive} disabled={adminPermissions.editing !== row.id}><Glyphicon glyph="ok" className={row.active
+              ? ""
+              : "invisible"}/></Button>
+              </td>
+              <td>
+                <Button block bsStyle="primary" bsSize="sm" className="outline" data-id={row.id} onClick={toggleEdit}><Glyphicon glyph={adminPermissions.editing === row.id
+              ? "ok"
+              : "pencil"}/></Button>
+              </td>
+              <td>
+                <Button block bsStyle="danger" bsSize="sm" className="outline" onClick={onDelete}><Glyphicon glyph={adminPermissions.editing === row.id
+              ? "ban-circle"
+              : "remove"}/></Button>
+              </td>
+            </tr>
+          ))}
           <tr>
             <td>
-              <FormControl type="text" placeholder="Enter Name" className="input-sm" value="Full Name" disabled/>
+              <FormControl type="text" placeholder="Enter Name" className="input-sm" data-key="name" data-list="new" value={adminPermissions.new.name} onInput={onInput}/>
             </td>
             <td>
-              <FormControl componentClass="select" className="input-sm" value="1" disabled>
-                {/* cahnge value above to value selected is row.Role */}
-                <option value="">Select Role</option>
+              <FormControl componentClass="select" className="input-sm" data-key="role" data-list="new" value={adminPermissions.new.role} onChange={onInput}>
+                <option value="0">Select Role</option>
                 <option value="1">Security</option>
                 <option value="2">Admin</option>
                 <option value="3">Super Admin</option>
@@ -40,34 +85,12 @@ const AdminPermissions = (props) => (
               </FormControl>
             </td>
             <td>
-              <Button block bsStyle="default" bsSize="sm" className="outline" disabled><Glyphicon glyph="ok"/></Button>
-            </td>
-            <td>
-              <Button block bsStyle="primary" bsSize="sm" className="outline"><Glyphicon glyph="pencil"/></Button>
-            </td>
-            <td>
-              <Button block bsStyle="danger" bsSize="sm" className="outline"><Glyphicon glyph="remove"/></Button>
-            </td>
-          </tr>
-          {/* end map */}
-          <tr>
-            <td>
-              <FormControl type="text" placeholder="Enter Name" className="input-sm"/>
-            </td>
-            <td>
-              <FormControl componentClass="select" className="input-sm">
-                <option value="">Select Role</option>
-                <option value="1">Security</option>
-                <option value="2">Admin</option>
-                <option value="3">Super Admin</option>
-                <option value="4">Super Duper Admin</option>
-              </FormControl>
-            </td>
-            <td>
-              <Button block bsStyle="default" bsSize="sm" className="outline"><Glyphicon glyph="ok"/></Button>
+              <Button block bsStyle="default" bsSize="sm" className="outline" data-key="active" data-list="new" data-value={adminPermissions.new.active} onClick={toggleActive}><Glyphicon glyph="ok" className={adminPermissions.new.active
+    ? ""
+    : "invisible"}/></Button>
             </td>
             <td colSpan="2">
-              <Button block bsStyle="success" bsSize="sm" className="outline"><Glyphicon glyph="plus"/></Button>
+              <Button block bsStyle="success" bsSize="sm" className="outline" data-table="adminPermissions" onClick={onAdd}><Glyphicon glyph="plus"/></Button>
             </td>
           </tr>
         </tbody>
@@ -76,4 +99,44 @@ const AdminPermissions = (props) => (
   </Row>
 );
 
-export default AdminPermissions;
+AdminPermissions.propTypes = {
+  adminPermissions: PropTypes.object.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onInput: PropTypes.func.isRequired,
+  toggleActive: PropTypes.func.isRequired,
+  toggleEdit: PropTypes.func.isRequired
+};
+
+const mapStateToProps = (state) => ({adminPermissions: state.adminPermissions});
+
+const mapDispatchToProps = (dispatch) => ({
+  onAdd(e) {
+    e.preventDefault();
+    dispatch(tableRowAdd(e.target.dataset.table));
+  },
+  onDelete(e) {
+    e.preventDefault();
+    dispatch(tableRowDelete(e.target.parentNode.parentNode.dataset.id));
+  },
+  onInput(e) {
+    e.preventDefault();
+    // dispatch(tableCellUpdate(e.target.dataset.key, e.target.value, e.target.dataset.list, e.target.parentNode.parentNode.dataset.id));
+    dispatch(tableCellUpdate(e.target.parentNode.parentNode.dataset.id));
+  },
+  toggleActive(e) {
+    e.preventDefault();
+    let toToggle = !(e.target.dataset.value === "true");
+    dispatch(tableCellUpdate(e.target.dataset.key, toToggle, e.target.dataset.list));
+  },
+  onEdit(e) {
+    e.preventDefault();
+    dispatch(tableRowEdit(e.target.dataset.id));
+  },
+  toggleEdit(e) {
+    e.preventDefault();
+    dispatch(tableRowEditToggle(e.target.dataset.id));
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminPermissions);

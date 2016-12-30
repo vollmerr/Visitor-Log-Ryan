@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux';
-import items from './itemReducer';
+import adminPermissions from './Admin-PermissionsReducer';
 
 const rootReducer = combineReducers({
-  items
+  adminPermissions
 });
 
 export default rootReducer;
