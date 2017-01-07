@@ -6,10 +6,8 @@ import AdminLocations from './Admin-Locations';
 import AdminNav from './Admin-Nav';
 
 class AdminPage extends React.Component {
-  // ... constructor etc
   render() {
     let permissions_page = 1;
-    //permission button pressed
     let selected_page = permissions_page
       ? <AdminPermissions/>
       : (

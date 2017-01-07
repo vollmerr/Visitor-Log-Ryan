@@ -1,17 +1,4 @@
-import {
-  Row,
-  Col,
-  Table,
-  Button,
-  FormControl,
-  Glyphicon
-} from 'react-bootstrap';
-import React, {PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {tableRowDelete, tableRowAdd, tableCellUpdate} from '../../actions/tableActions';
-import {ButtonType} from '../common/Buttons.js';
-
-const AdminPermissionsTable = ({adminPermissions, onDelete, onAdd, onInput}) => {
+const AdminPermissionsTable = (...props) => {
   return (
     <Row>
       <Col xs={12}>
@@ -30,9 +17,19 @@ const AdminPermissionsTable = ({adminPermissions, onDelete, onAdd, onInput}) => 
           <tbody>
             {adminPermissions.table.map(row => (
               <tr key={row.id}>
-                <td>
-                  <FormControl type="text" placeholder="Enter Name" className="input-sm" value={row.name} disabled/>
-                </td>
+                <TableText />
+                <TableSelect />
+                <TableButton />
+              </tr>
+
+
+
+
+
+
+
+
+
                 <td>
                   <FormControl componentClass="select" className="input-sm" value={row.role} disabled>
                     <option value="">Select Role</option>
@@ -80,27 +77,8 @@ const AdminPermissionsTable = ({adminPermissions, onDelete, onAdd, onInput}) => 
   );
 }
 
-AdminPermissionsTable.propTypes = {
-  adminPermissions: PropTypes.object.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onInput: PropTypes.func.isRequired
-};
-
-const mapStateToProps = (state) => ({adminPermissions: state.adminPermissions});
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  onAdd: (e) => {
-    dispatch(tableRowAdd());
-  },
-  onDelete: (e) => {
-    dispatch(tableRowDelete(e.target.dataset.id));
-  },
-  onInput: (e) => {
-    dispatch(tableCellUpdate(e.target.dataset.key, e.target.value));
-  }
-});
-
-const AdminPermissions = connect(mapStateToProps, mapDispatchToProps)(AdminPermissionsTable);
-
-export default AdminPermissions;
+const TableText = ({onInput, value, }) => (
+    <td>
+      <FormControl type="text" onInput={onInput} placeholder="Enter Name" className="input-sm" value={value} disabled/>
+    </td>
+);

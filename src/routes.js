@@ -7,9 +7,9 @@ import AdminPage from './components/admin/_AdminPage';
 
 export default(
   <Route path="/" component={App}>
-    <IndexRoute component={LogPage}/>
+    <IndexRoute component={AdminPage}/>
     <Route path="about" component={AboutPage}/>
-    <Route path="admin" component={AdminPage}/>
+    <Route path="log" component={LogPage}/>
     <Redirect from="*" to="/"/>
   </Route>
 );
