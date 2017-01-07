@@ -5,11 +5,12 @@ import {render} from 'react-dom';
 import {Router, browserHistory} from 'react-router';
 import routes from './routes';
 import './css/style.less';
-import configureStore from './store/configureStore';
+import configureStore, {initialState} from './store/configureStore';
 import {Provider} from 'react-redux';
-import data from './data';
+// import data from './data';
 
-const store = configureStore(data);
+// const store = configureStore(data);
+const store = configureStore(initialState);
 
 render(
   <Provider store={store}>
